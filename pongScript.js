@@ -1,46 +1,69 @@
 $(document).ready(function(){
 	//boundary values in px
-	var topLimit = 60;
-	var botLimit = 610;
+	var topLimit = Math.floor($("#pongBoard").offset().top);
+	var botLimit = Math.floor(topLimit+$("#pongBoard").height());
 	//ball calculations
-	//pixel boudnaries of paddle
-	var leftPaddle = $("#playerPaddle").offset().left + $("#playerPaddle").width();
-	var rightPaddle = $("#compPaddle").offset().left
+	//pixel boudnaries of board
+	var leftBound = Math.floor($("#pongBoard").offset().left);
+	var rightBound = Math.floor($("#pongBoard").offset().left + $("#pongBoard").width());
 
-	//X velocity pixels per cycle
-	var xVel = 0;
-	//Y velocity pixels per cycle
+	//XY Velocity in pixels per cycle
+	var xVel = 10;
 	var yVel = 0;
-	var ballAnimation = function(){
-		var xPos = $(".ball").offset()
-	}
 
-	setInterval(ballAnimation(),100);
+	//start ball animation, once every 0.1s	
+	var count= 0;
+	var ball = $(".ball");
+	var animation = setInterval(ballAnimation, 10);
+
+	/*
+	 * Function that handles the movement of the ball
+	 */
+	function ballAnimation(){
+		//ball is moving left
+		// if (xVel < 0) {
+		// 	console.log("Ball is moving left");
+		// 	if(ball.offset().left <= leftBound){//ball hits left wall
+		// 		console.log("Hit left wall");
+		// 		xVel = -xVel;//reverse x vector
+		// 	}
+		// } else if (xVel > 0) {//ball moving right
+		// 	console.log("Ball moving right");
+		// 	if((ball.offset().left + ball.width()) >= rightBound){//ball hits right wall
+		// 		console.log("Hit right wall");
+		// 		xVel = -xVel;//reverse x vector
+		// 	}
+		// }
+		var nextX = ball.offset().left + xVel;
+		var nextY = ball.offset().top+yVel;
+		ball.css("left", ""+nextX);
+		console.log("It moved");
+
+	};
+
 	//paddle movement
 	$(document).mousemove(function(mouse){
 		var paddleCenter = $("#playerPaddle").height()/2;
-		console.log("Mouse Y: "+mouse.pageY);
 		var topBound = topLimit + paddleCenter;//lowest pixel value for center of paddle
 		var botBound = botLimit - paddleCenter;//highest pixel value for center of paddle
 		//if mouse is outside those bounds, dont change anything
 		if(mouse.pageY < topBound){
-			console.log("above");
 			//snap to the top
 			$("#playerPaddle").css("top", ""+topBound);
 			$("#compPaddle").css("top", ""+topBound);
 			return;
 		}
 		if(mouse.pageY > botBound){
-			console.log("below");
 			//snap to the bottom
 			$("#playerPaddle").css("top", ""+botBound);
-			$("#compPaddle").css("top", ""+botBound);
+			$("#compPaddle").css("top", ""+mouse.pageY);
 			return;
 		}
 		//set new height to center paddle at mouse Y coordinate
 		$("#playerPaddle").css("top", ""+mouse.pageY-paddleCenter-topLimit);
-		$("#compPaddle").css("top", ""+mouse.pageY-paddleCenter-topLimit)
+		$("#compPaddle").css("top", ""+mouse.pageY-paddleCenter-topLimit);
 	});
-
-
+	$(document).click(function(){
+		clearInterval(animation);
+	});
 });
