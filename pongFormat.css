@@ -22,7 +22,7 @@ body{
 	margin:auto;
 }
 .paddle{
-	height:50px;
+	height:100px;
 	width:10px;
 	position:absolute;
 }
