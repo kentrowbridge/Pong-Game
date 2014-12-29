@@ -36,8 +36,8 @@ body{
 }
 .ball{
 	border-radius:50%;
-	background:black;
-	height:50px;
-	width:50px;
+	background-color:yellow;
+	height:25px;
+	width:25px;
 	position:absolute;
 }
