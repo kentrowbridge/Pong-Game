@@ -6,6 +6,7 @@ $(document).ready(function(){
 
 	var animation;
 	var intervalspd = 10;
+	var difficulty = "hard";//easy-medium-hard range
 	//XY Velocity in pixels per cycle
 	var xVel;
 	var yVel;
@@ -25,14 +26,13 @@ $(document).ready(function(){
 	 */
 	function ballAnimation(){
 		getBounds();
-		console.log("animation running");
 		//horizontal bounds		
 		if (xVel < 0) {//ball is moving left
 			if($ball.position().left <= $player.width()){//ball hits left wall
 				if(hitPlayer()){
+					//yVel += Math.random();
 					xVel = -xVel;
 				} else {
-					alert("Out of bounds left");
 					clearInterval(animation);
 					animation = false;
 				}
@@ -40,9 +40,9 @@ $(document).ready(function(){
 		} else if (xVel > 0) {//ball moving right
 			if(($ball.position().left + $ball.width()) >= ($board.width() - $computer.width())){//ball hits right wall
 				if(hitComp()){
+					//yVel += Math.random();
 					xVel = -xVel;
 				} else {
-					alert("Out of bounds right");
 					clearInterval(animation);
 					animation = false;
 				}
@@ -62,21 +62,46 @@ $(document).ready(function(){
 		//move ball
 		$ball.css("left", $ball.position().left+xVel);
 		$ball.css("top", $ball.position().top+yVel);
+
+		moveComputer(difficulty);
 	};
 
-	function hitPlayer(){
-		if($ball.position().top >= $player.position().top &&
-			$ball.position().top <= ($player.position().top + $player.height() - $ball.height())){		
-			return true;
-		} else {
-			return false;
+	function moveComputer(diff){
+		var centerDiff = ($computer.position().top + $computer.height()/2) - ($ball.position().top + $ball.height()); 
+		var paddleSpeed = 0;
+		switch(diff){
+			case "easy":
+				paddleSpeed = 3;
+				break;
+			case "hard":
+				paddleSpeed = 10;
+				break;
+			default://medium default
+				paddleSpeed = 6;
+				break;
+		}
+		//move the paddle
+		if(centerDiff > 0){
+			//ball is above paddle
+			if($computer.position().top < paddleSpeed){
+				$computer.css("top", 0);
+			} else {				
+				$computer.css("top", $computer.position().top - paddleSpeed);
+			}
+		} else if(centerDiff < 0){
+			//ball is below paddle
+			if(($board.height() - ($computer.position().top + $computer.height())) < paddleSpeed){
+				$computer.css("top", $board.height() - $computer.height());
+			} else {				
+				$computer.css("top", $computer.position().top + paddleSpeed);
+			}
 		}
 	}
 
 	function startAnimation(){
 		//XY Velocity in pixels per cycle
-		xVel = (Math.random()*5);
-		yVel = (Math.random()*5);
+		xVel = (Math.random())+2;
+		yVel = (Math.random())+2;
 		xPos = (Math.random()*($board.width()/2))+($board.width()/4);
 		yPos = Math.random()*$board.height();
 		$ball.css("top", yPos);
@@ -85,9 +110,18 @@ $(document).ready(function(){
 		animation = setInterval(ballAnimation, intervalspd);
 	}
 
+	function hitPlayer(){
+		if($ball.position().top >= $player.position().top - $ball.height()/2 &&
+			$ball.position().top <= ($player.position().top + $player.height() - ($ball.height()/2))) {		
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function hitComp(){
-		if($ball.position().top >= $computer.position().top &&
-			$ball.position().top <= ($computer.position().top + $computer.height() - $ball.height())){
+		if($ball.position().top >= $computer.position().top + $ball.height()/2 &&
+			$ball.position().top <= ($computer.position().top + $computer.height() - ($ball.height()/2))) {
 			return true;
 		} else {
 			return false;
@@ -113,19 +147,16 @@ $(document).ready(function(){
 		//if mouse is outside those bounds, dont change anything
 		if(mouse.pageY < topBound){
 			//snap to the top
-			$player.css("top", ""+topBound);
-			$computer.css("top", ""+topBound);
+			$player.css("top", ""+0);
 			return;
 		}
 		if(mouse.pageY > botBound){
 			//snap to the bottom
-			$player.css("top", ""+botBound);
-			$computer.css("top", ""+mouse.pageY);
+			$player.css("top", ""+$board.height() - $player.height());
 			return;
 		}
 		//set new height to center paddle at mouse Y coordinate
 		$player.css("top", ""+mouse.pageY-paddleCenter-topLimit);
-		$computer.css("top", ""+mouse.pageY-paddleCenter-topLimit);
 	});
 
 	$(document).click(function(){
