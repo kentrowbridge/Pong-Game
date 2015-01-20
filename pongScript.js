@@ -7,6 +7,9 @@ $(document).ready(function(){
 	var animation;
 	var intervalspd = 10;
 	var difficulty = "hard";//easy-medium-hard range
+	//The units of the velocity values are pixels/ms
+	//old and new values of paddle velocity
+	//TODO
 	//XY Velocity in pixels per cycle
 	var xVel;
 	var yVel;
@@ -30,7 +33,8 @@ $(document).ready(function(){
 		if (xVel < 0) {//ball is moving left
 			if($ball.position().left <= $player.width()){//ball hits left wall
 				if(hitPlayer()){
-					//yVel += Math.random();
+					//once ball hits player bounce off with respect to paddle velocity
+					yVel += Math.random()*2;
 					xVel = -xVel;
 				} else {
 					clearInterval(animation);
@@ -40,7 +44,7 @@ $(document).ready(function(){
 		} else if (xVel > 0) {//ball moving right
 			if(($ball.position().left + $ball.width()) >= ($board.width() - $computer.width())){//ball hits right wall
 				if(hitComp()){
-					//yVel += Math.random();
+					yVel += Math.random()*2;
 					xVel = -xVel;
 				} else {
 					clearInterval(animation);
@@ -138,7 +142,6 @@ $(document).ready(function(){
 		leftBound = Math.floor($("#pongBoard").offset().left);
 		rightBound = Math.floor($("#pongBoard").offset().left + $("#pongBoard").width());
 	}
-
 	//paddle movement
 	$(document).mousemove(function(mouse){
 		var paddleCenter = $player.height()/2;
@@ -165,6 +168,12 @@ $(document).ready(function(){
 		} else {
 			clearInterval(animation);
 			animation = false;
+		}
+	});
+
+	$(document).keypress(function(keyEvent){
+		if(keyEvent.keyCode == 32){
+			console.log("spacebar pressed");
 		}
 	});
 });
